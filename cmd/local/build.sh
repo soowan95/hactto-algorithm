@@ -1,1 +1,1 @@
-npm run build && npm pack
+npm run build
