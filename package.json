@@ -23,6 +23,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "prepublishOnly": "npm run build",
+    "publish:yalc": "npm run build && yalc publish",
     "push:yalc": "npm run build && yalc push"
   },
   "devDependencies": {
