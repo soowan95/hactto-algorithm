@@ -1,1 +1,1 @@
-export type AlgorithmFunction = (data: number[][]) => number[];
+export type AlgorithmFunction = (data: number[][]) => Promise<number[]>;

@@ -1,7 +1,9 @@
-import { AlgorithmFunction } from '../algorithm-function';
+import { AlgorithmFunction } from './algorithm-function';
 
-export const minCount: AlgorithmFunction = (data: number[][]): number[] => {
-  if (data.length === 0) return [];
+export const minCount: AlgorithmFunction = (
+  data: number[][],
+): Promise<number[]> => {
+  if (data.length === 0) return Promise.resolve([]);
 
   const NUMBER_OF_POSITIONS = 7;
   const MAX_LOTTO_NUMBER = 45;
@@ -18,7 +20,6 @@ export const minCount: AlgorithmFunction = (data: number[][]): number[] => {
 
   for (let i = 0; i < data.length; i++) {
     const winningNumbers = data[i];
-
     for (let j = 0; j < NUMBER_OF_POSITIONS; j++) {
       const num = winningNumbers[j];
       if (num >= 1 && num <= MAX_LOTTO_NUMBER) {
@@ -35,7 +36,11 @@ export const minCount: AlgorithmFunction = (data: number[][]): number[] => {
     let oldestEpisode = Infinity;
     let minNum = -1;
 
-    for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
+    const startNum = i === 0 || i === 6 ? 1 : result[i - 1] + 1;
+
+    for (let num = startNum; num <= MAX_LOTTO_NUMBER; num++) {
+      if (i === 6 && result.slice(0, 6).includes(num)) continue;
+
       const currentHitCount = hitCounts[i][num];
       const currentLatHitEpisode = lastHitEpisode[i][num];
 
@@ -51,8 +56,11 @@ export const minCount: AlgorithmFunction = (data: number[][]): number[] => {
       }
     }
 
+    if (minNum === -1 || minNum > MAX_LOTTO_NUMBER)
+      return Promise.resolve([0, 0, 0, 0, 0, 0, 0]);
+
     result.push(minNum);
   }
 
-  return result;
+  return Promise.resolve(result);
 };
