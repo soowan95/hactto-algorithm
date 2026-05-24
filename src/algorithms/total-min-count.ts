@@ -65,6 +65,8 @@ export const totalMinCount: AlgorithmFunction = (
   let oldestEpisode = Infinity;
 
   for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
+    if (mainNumbers.includes(num)) continue;
+
     const currentCount = bonusHitCounts[num];
     const currentLastHit = bonusLastHit[num];
 
