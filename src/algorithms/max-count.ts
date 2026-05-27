@@ -1,6 +1,6 @@
 import { AlgorithmFunction } from './algorithm-function';
 
-export const minCount: AlgorithmFunction = (
+export const maxCount: AlgorithmFunction = (
   data: number[][],
 ): Promise<number[]> => {
   if (data.length === 0) return Promise.resolve([]);
@@ -13,7 +13,7 @@ export const minCount: AlgorithmFunction = (
     () => new Array(MAX_LOTTO_NUMBER + 1).fill(0),
   );
 
-  const lastHitEpisode: number[][] = Array.from(
+  const recentHitEpisode: number[][] = Array.from(
     { length: NUMBER_OF_POSITIONS },
     () => new Array(MAX_LOTTO_NUMBER + 1).fill(-1),
   );
@@ -24,7 +24,7 @@ export const minCount: AlgorithmFunction = (
       const num = winningNumbers[j];
       if (num >= 1 && num <= MAX_LOTTO_NUMBER) {
         hitCounts[j][num]++;
-        lastHitEpisode[j][num] = i;
+        recentHitEpisode[j][num] = i;
       }
     }
   }
@@ -32,31 +32,32 @@ export const minCount: AlgorithmFunction = (
   const result: number[] = [];
 
   for (let i = 0; i < NUMBER_OF_POSITIONS; i++) {
-    let minCount = Infinity;
-    let oldestEpisode = Infinity;
-    let minNum = -1;
+    let maxCount = 0;
+    let mostRecentEpisode = 0;
+    let maxNum = -1;
 
     for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
+
       const currentHitCount = hitCounts[i][num];
       if (currentHitCount === 0) continue;
-      const currentHitEpisode = lastHitEpisode[i][num];
+      const currentHitEpisode = recentHitEpisode[i][num];
 
-      if (currentHitCount < minCount) {
-        minCount = currentHitCount;
-        oldestEpisode = currentHitEpisode;
-        minNum = num;
-      } else if (currentHitCount === minCount) {
-        if (currentHitEpisode < oldestEpisode) {
-          oldestEpisode = currentHitEpisode;
-          minNum = num;
+      if (currentHitCount > maxCount) {
+        maxCount = currentHitCount;
+        mostRecentEpisode = currentHitEpisode;
+        maxNum = num;
+      } else if (currentHitCount === maxCount) {
+        if (currentHitEpisode > mostRecentEpisode) {
+          mostRecentEpisode = currentHitEpisode;
+          maxNum = num;
         }
       }
     }
 
-    if (minNum === -1 || minNum > MAX_LOTTO_NUMBER)
+    if (maxNum === -1 || maxNum > MAX_LOTTO_NUMBER)
       return Promise.resolve([0, 0, 0, 0, 0, 0, 0]);
 
-    result.push(minNum);
+    result.push(maxNum);
   }
 
   const finalNumbers = result.slice(0, 6).sort((a, b) => a - b);
