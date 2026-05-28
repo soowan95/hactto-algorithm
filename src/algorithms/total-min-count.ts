@@ -2,85 +2,92 @@ import { AlgorithmFunction } from './algorithm-function';
 
 export const totalMinCount: AlgorithmFunction = (
   data: number[][],
+  weights: number[],
 ): Promise<number[]> => {
   if (data.length === 0) return Promise.resolve([]);
 
+  const NUMBER_OF_POSITION = 7;
   const MAX_LOTTO_NUMBER = 45;
 
-  const mainHitCounts = new Array(MAX_LOTTO_NUMBER + 1).fill(0);
-  const mainLastHit = new Array(MAX_LOTTO_NUMBER + 1).fill(-1);
+  const mainPlacer: { num: number; score: number }[] = [];
+  const bonusPlacer: { num: number; score: number }[] = [];
 
-  const bonusHitCounts = new Array(MAX_LOTTO_NUMBER + 1).fill(0);
-  const bonusLastHit = new Array(MAX_LOTTO_NUMBER + 1).fill(-1);
+  for (let i = 1; i <= MAX_LOTTO_NUMBER; i++) {
+    mainPlacer.push({ num: i, score: 0 });
+    bonusPlacer.push({ num: i, score: 0 });
+  }
 
-  for (let i = 0; i < data.length; i++) {
-    const winningNumbers = data[i];
+  const positionOrder = weights
+    .map((weight, index) => ({ pos: index, weight }))
+    .sort((a, b) => b.weight - a.weight);
 
-    for (let j = 0; j < 6; j++) {
-      const num = winningNumbers[j];
-      if (num >= 1 && num <= MAX_LOTTO_NUMBER) {
-        mainHitCounts[num]++;
-        mainLastHit[num] = i;
+  const mainNumbers: number[] = new Array(NUMBER_OF_POSITION - 1).fill(0);
+  const usedNumbers = new Set<number>();
+  let rankOfBonus = 0;
+
+  for (let rank = 0; rank < positionOrder.length; rank++) {
+    const i = positionOrder[rank].pos;
+    if (i === 6) rankOfBonus = rank;
+
+    for (let episode = 0; episode < data.length; episode++) {
+      const num = data[episode][i];
+      if (num < 1 || num > MAX_LOTTO_NUMBER) continue;
+
+      if (i === 6) {
+        bonusPlacer[num - 1].score++;
+      } else {
+        mainPlacer[num - 1].score += rank * 0.01 + 1;
       }
-    }
-
-    const bonusNum = winningNumbers[6];
-    if (bonusNum >= 1 && bonusNum <= MAX_LOTTO_NUMBER) {
-      bonusHitCounts[bonusNum]++;
-      bonusLastHit[bonusNum] = i;
     }
   }
 
-  const mainNumbers: number[] = [];
+  const sortedMain = mainPlacer
+    .filter((placer) => placer.score > 0)
+    .sort((a, b) => a.score - b.score);
 
-  for (let step = 0; step < 6; step++) {
-    let minCount = Infinity;
-    let oldestEpisode = Infinity;
-    let minNum = -1;
+  const sortedBonus = bonusPlacer
+    .filter((placer) => placer.score > 0)
+    .sort((a, b) => a.score - b.score);
 
-    for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
-      if (mainNumbers.includes(num)) continue;
+  let bonusNumber = 0;
+  let mainIdx = 0;
+  let bonusIdx = 0;
 
-      const currentCount = mainHitCounts[num];
-      const currentLastHit = mainLastHit[num];
-
-      if (currentCount < minCount) {
-        minCount = currentCount;
-        oldestEpisode = currentLastHit;
-        minNum = num;
-      } else if (currentCount === minCount) {
-        if (currentLastHit < oldestEpisode) {
-          oldestEpisode = currentLastHit;
-          minNum = num;
-        }
+  for (let i = 0; i < NUMBER_OF_POSITION; i++) {
+    if (i < rankOfBonus) {
+      const choice = sortedMain[mainIdx++];
+      if (choice) {
+        mainNumbers[i] = choice.num;
+        usedNumbers.add(choice.num);
+      }
+    } else if (i === rankOfBonus) {
+      while (
+        bonusIdx < sortedBonus.length &&
+        usedNumbers.has(sortedBonus[bonusIdx].num)
+      ) {
+        bonusIdx++;
+      }
+      const choice = sortedBonus[bonusIdx] || sortedMain[mainIdx++];
+      if (choice) {
+        bonusNumber = choice.num;
+        usedNumbers.add(choice.num);
+      }
+    } else {
+      while (
+        mainIdx < sortedMain.length &&
+        usedNumbers.has(sortedMain[mainIdx].num)
+      ) {
+        mainIdx++;
+      }
+      const choice = sortedMain[mainIdx++];
+      if (choice) {
+        mainNumbers[i - 1] = choice.num;
+        usedNumbers.add(choice.num);
       }
     }
-    if (minNum !== -1) mainNumbers.push(minNum);
   }
 
   mainNumbers.sort((a, b) => a - b);
-
-  let bonusNumber = -1;
-  let minCount = Infinity;
-  let oldestEpisode = Infinity;
-
-  for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
-    if (mainNumbers.includes(num)) continue;
-
-    const currentCount = bonusHitCounts[num];
-    const currentLastHit = bonusLastHit[num];
-
-    if (currentCount < minCount) {
-      minCount = currentCount;
-      oldestEpisode = currentLastHit;
-      bonusNumber = num;
-    } else if (currentCount === minCount) {
-      if (currentLastHit < oldestEpisode) {
-        oldestEpisode = currentLastHit;
-        bonusNumber = num;
-      }
-    }
-  }
 
   return Promise.resolve([...mainNumbers, bonusNumber]);
 };

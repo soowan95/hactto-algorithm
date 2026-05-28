@@ -2,6 +2,7 @@ import { AlgorithmFunction } from './algorithm-function';
 
 export const maxCount: AlgorithmFunction = (
   data: number[][],
+  weights: number[],
 ): Promise<number[]> => {
   if (data.length === 0) return Promise.resolve([]);
 
@@ -29,39 +30,55 @@ export const maxCount: AlgorithmFunction = (
     }
   }
 
-  const result: number[] = [];
+  const positionOrder = weights
+    .map((weight, index) => ({ pos: index, weight }))
+    .sort((a, b) => b.weight - a.weight);
 
-  for (let i = 0; i < NUMBER_OF_POSITIONS; i++) {
-    let maxCount = 0;
-    let mostRecentEpisode = 0;
-    let maxNum = -1;
+  const result: number[] = new Array(NUMBER_OF_POSITIONS).fill(0);
+  const usedNumbers = new Set<number>();
+
+  const getPlaceCount = (rank: number) => Math.max(1, 5 - rank);
+
+  for (let rank = 0; rank < positionOrder.length; rank++) {
+    const i = positionOrder[rank].pos;
+
+    const placer: { num: number; count: number; episode: number }[] = [];
 
     for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
+      if (usedNumbers.has(num) || hitCounts[i][num] === 0) continue;
 
-      const currentHitCount = hitCounts[i][num];
-      if (currentHitCount === 0) continue;
-      const currentHitEpisode = recentHitEpisode[i][num];
+      placer.push({
+        num,
+        count: hitCounts[i][num],
+        episode: recentHitEpisode[i][num],
+      });
 
-      if (currentHitCount > maxCount) {
-        maxCount = currentHitCount;
-        mostRecentEpisode = currentHitEpisode;
-        maxNum = num;
-      } else if (currentHitCount === maxCount) {
-        if (currentHitEpisode > mostRecentEpisode) {
-          mostRecentEpisode = currentHitEpisode;
-          maxNum = num;
+      if (placer.length === 0) {
+        for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
+          if (!usedNumbers.has(num)) {
+            placer.push({ num, count: Infinity, episode: Infinity });
+          }
         }
       }
+
+      placer.sort((a, b) => {
+        if (a.count !== b.count) return b.count - a.count;
+        return b.episode - a.episode;
+      });
+
+      result[i] = placer[0].num;
+
+      const placeCount = getPlaceCount(rank);
+
+      const placeLimit = Math.min(placer.length, placeCount);
+      for (let place = 0; place < placeLimit; place++) {
+        usedNumbers.add(placer[place].num);
+      }
     }
-
-    if (maxNum === -1 || maxNum > MAX_LOTTO_NUMBER)
-      return Promise.resolve([0, 0, 0, 0, 0, 0, 0]);
-
-    result.push(maxNum);
   }
 
-  const finalNumbers = result.slice(0, 6).sort((a, b) => a - b);
-  if (result[6]) finalNumbers.push(result[6]);
+  const mainNumbers = result.slice(0, 6).sort((a, b) => a - b);
+  const finalNumbers = [...mainNumbers, result[6]];
 
   return Promise.resolve(finalNumbers);
 };
