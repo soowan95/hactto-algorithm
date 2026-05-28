@@ -2,6 +2,7 @@ import { AlgorithmFunction } from './algorithm-function';
 
 export const minCount: AlgorithmFunction = (
   data: number[][],
+  weights: number[],
 ): Promise<number[]> => {
   if (data.length === 0) return Promise.resolve([]);
 
@@ -29,38 +30,55 @@ export const minCount: AlgorithmFunction = (
     }
   }
 
-  const result: number[] = [];
+  const positionOrder = weights
+    .map((weight, index) => ({ pos: index, weight }))
+    .sort((a, b) => b.weight - a.weight);
 
-  for (let i = 0; i < NUMBER_OF_POSITIONS; i++) {
-    let minCount = Infinity;
-    let oldestEpisode = Infinity;
-    let minNum = -1;
+  const result: number[] = new Array(NUMBER_OF_POSITIONS).fill(0);
+  const usedNumbers = new Set<number>();
+
+  const getPlaceCount = (rank: number) => Math.max(1, 5 - rank);
+
+  for (let rank = 0; rank < positionOrder.length; rank++) {
+    const i = positionOrder[rank].pos;
+
+    const placer: { num: number; count: number; episode: number }[] = [];
 
     for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
-      const currentHitCount = hitCounts[i][num];
-      if (currentHitCount === 0) continue;
-      const currentHitEpisode = lastHitEpisode[i][num];
+      if (usedNumbers.has(num) || hitCounts[i][num] === 0) continue;
 
-      if (currentHitCount < minCount) {
-        minCount = currentHitCount;
-        oldestEpisode = currentHitEpisode;
-        minNum = num;
-      } else if (currentHitCount === minCount) {
-        if (currentHitEpisode < oldestEpisode) {
-          oldestEpisode = currentHitEpisode;
-          minNum = num;
+      placer.push({
+        num,
+        count: hitCounts[i][num],
+        episode: lastHitEpisode[i][num],
+      });
+    }
+
+    if (placer.length === 0) {
+      for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
+        if (!usedNumbers.has(num)) {
+          placer.push({ num, count: 0, episode: -1 });
         }
       }
     }
 
-    if (minNum === -1 || minNum > MAX_LOTTO_NUMBER)
-      return Promise.resolve([0, 0, 0, 0, 0, 0, 0]);
+    placer.sort((a, b) => {
+      if (a.count !== b.count) return a.count - b.count;
+      return a.episode - b.episode;
+    });
 
-    result.push(minNum);
+    result[i] = placer[0].num;
+
+    const placeCount = getPlaceCount(rank);
+
+    const placeLimit = Math.min(placer.length, placeCount);
+    for (let place = 0; place < placeLimit; place++) {
+      usedNumbers.add(placer[place].num);
+    }
   }
 
-  const finalNumbers = result.slice(0, 6).sort((a, b) => a - b);
-  if (result[6]) finalNumbers.push(result[6]);
+  const mainNumbers = result.slice(0, 6).sort((a, b) => a - b);
+  const finalNumbers = [...mainNumbers, result[6]];
 
   return Promise.resolve(finalNumbers);
 };
