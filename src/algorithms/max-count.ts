@@ -52,20 +52,22 @@ export const maxCount: AlgorithmFunction = (
         count: hitCounts[i][num],
         episode: recentHitEpisode[i][num],
       });
+    }
 
-      if (placer.length === 0) {
-        for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
-          if (!usedNumbers.has(num)) {
-            placer.push({ num, count: Infinity, episode: Infinity });
-          }
+    if (placer.length === 0) {
+      for (let num = 1; num <= MAX_LOTTO_NUMBER; num++) {
+        if (!usedNumbers.has(num)) {
+          placer.push({ num, count: Infinity, episode: Infinity });
         }
       }
+    }
 
-      placer.sort((a, b) => {
-        if (a.count !== b.count) return b.count - a.count;
-        return b.episode - a.episode;
-      });
+    placer.sort((a, b) => {
+      if (a.count !== b.count) return b.count - a.count;
+      return b.episode - a.episode;
+    });
 
+    if (placer.length > 0) {
       result[i] = placer[0].num;
 
       const placeCount = getPlaceCount(rank);
