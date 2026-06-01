@@ -39,5 +39,5 @@ export const pairFrequency: FrequencyFunction = (
     ballScore[5].number,
   ].sort((a, b) => a - b);
 
-  return Promise.resolve([...result, 0]);
+  return Promise.resolve(result);
 };
