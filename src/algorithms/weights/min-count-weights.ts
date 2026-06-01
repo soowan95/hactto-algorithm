@@ -1,6 +1,6 @@
-import { AlgorithmFunction } from './algorithm-function';
+import { WeightsFunction } from './weights-function';
 
-export const minCount: AlgorithmFunction = (
+export const minCountWeights: WeightsFunction = (
   data: number[][],
   weights: number[],
 ): Promise<number[]> => {

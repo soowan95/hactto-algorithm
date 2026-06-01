@@ -1,6 +1,6 @@
-import { AlgorithmFunction } from './algorithm-function';
+import { WeightsFunction } from './weights-function';
 
-export const totalMaxCount: AlgorithmFunction = (
+export const totalMinCountWeights: WeightsFunction = (
   data: number[][],
   weights: number[],
 ): Promise<number[]> => {
@@ -36,18 +36,18 @@ export const totalMaxCount: AlgorithmFunction = (
       if (i === 6) {
         bonusPlacer[num - 1].score++;
       } else {
-        mainPlacer[num - 1].score += (positionOrder.length - rank) * 0.01 + 1;
+        mainPlacer[num - 1].score += rank * 0.01 + 1;
       }
     }
   }
 
   const sortedMain = mainPlacer
     .filter((placer) => placer.score > 0)
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => a.score - b.score);
 
   const sortedBonus = bonusPlacer
     .filter((placer) => placer.score > 0)
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => a.score - b.score);
 
   let bonusNumber = 0;
   let mainIdx = 0;
