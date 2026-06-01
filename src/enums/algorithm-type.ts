@@ -1,6 +1,0 @@
-export enum AlgorithmType {
-  MIN_COUNT = 'MIN_COUNT',
-  TOTAL_MIN_COUNT = 'TOTAL_MIN_COUNT',
-  MAX_COUNT = 'MAX_COUNT',
-  TOTAL_MAX_COUNT = 'TOTAL_MAX_COUNT',
-}

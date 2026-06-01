@@ -1,6 +1,6 @@
-import { AlgorithmFunction } from './algorithm-function';
+import { WeightsFunction } from './weights-function';
 
-export const maxCount: AlgorithmFunction = (
+export const recentMaxCountWeights: WeightsFunction = (
   data: number[][],
   weights: number[],
 ): Promise<number[]> => {
@@ -8,25 +8,26 @@ export const maxCount: AlgorithmFunction = (
 
   const NUMBER_OF_POSITIONS = 7;
   const MAX_LOTTO_NUMBER = 45;
+  const RECENT_ROUND_COUNT = 30;
 
-  const hitCounts: number[][] = Array.from(
-    { length: NUMBER_OF_POSITIONS },
-    () => new Array(MAX_LOTTO_NUMBER + 1).fill(0),
+  const recentData = data.slice(0, Math.min(data.length, RECENT_ROUND_COUNT));
+
+  const hitCounts = Array.from({ length: NUMBER_OF_POSITIONS }, () =>
+    new Array(MAX_LOTTO_NUMBER + 1).fill(0),
   );
 
-  const recentHitEpisode: number[][] = Array.from(
-    { length: NUMBER_OF_POSITIONS },
-    () => new Array(MAX_LOTTO_NUMBER + 1).fill(-1),
+  const recentHitEpisode = Array.from({ length: NUMBER_OF_POSITIONS }, () =>
+    new Array(MAX_LOTTO_NUMBER + 1).fill(-1),
   );
 
-  for (let i = 0; i < data.length; i++) {
-    const winningNumbers = data[i];
+  for (let i = 0; i < recentData.length; i++) {
+    const winningNumbers = recentData[i];
+
     for (let j = 0; j < NUMBER_OF_POSITIONS; j++) {
       const num = winningNumbers[j];
-      if (num >= 1 && num <= MAX_LOTTO_NUMBER) {
-        hitCounts[j][num]++;
-        recentHitEpisode[j][num] = i;
-      }
+
+      hitCounts[j][num]++;
+      recentHitEpisode[j][num] = i;
     }
   }
 
