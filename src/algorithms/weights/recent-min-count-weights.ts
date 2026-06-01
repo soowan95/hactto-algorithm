@@ -6,7 +6,7 @@ export const recentMinCountWeights: WeightsFunction = (
 ): Promise<number[]> => {
   if (data.length === 0) return Promise.resolve([]);
 
-  const NUMBER_OF_POSITIONS = 7;
+  const NUMBER_OF_POSITIONS = 6;
   const MAX_LOTTO_NUMBER = 45;
   const RECENT_ROUND_COUNT = 30;
 
@@ -78,8 +78,7 @@ export const recentMinCountWeights: WeightsFunction = (
     }
   }
 
-  const mainNumbers = result.slice(0, 6).sort((a, b) => a - b);
-  const finalNumbers = [...mainNumbers, result[6]];
+  result.sort((a, b) => a - b);
 
-  return Promise.resolve(finalNumbers);
+  return Promise.resolve(result);
 };
