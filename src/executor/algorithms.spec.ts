@@ -103,12 +103,30 @@ describe('Hactto 알고리즘 실행 결과 확인', () => {
     console.log('--------------------------------------------------');
   });
 
-  it('2. TRIPLET_FREQUENCY 결과', async () => {
+  it('2. RECENT_PAIR_FREQUENCY 결과', async () => {
+    const command = new FrequencyCommand('RECENT_PAIR_FREQUENCY', data);
+
+    const result = await hacttoExecute(command);
+
+    console.log('👉 [RECENT_PAIR_FREQUENCY] 결과:', result);
+    console.log('--------------------------------------------------');
+  });
+
+  it('3. TRIPLET_FREQUENCY 결과', async () => {
     const command = new FrequencyCommand('TRIPLET_FREQUENCY', data);
 
     const result = await hacttoExecute(command);
 
     console.log('👉 [TRIPLET_FREQUENCY] 결과:', result);
+    console.log('--------------------------------------------------');
+  });
+
+  it('4. RECENT_TRIPLET_FREQUENCY 결과', async () => {
+    const command = new FrequencyCommand('RECENT_TRIPLET_FREQUENCY', data);
+
+    const result = await hacttoExecute(command);
+
+    console.log('👉 [RECENT_TRIPLET_FREQUENCY] 결과:', result);
     console.log('--------------------------------------------------');
   });
 });
