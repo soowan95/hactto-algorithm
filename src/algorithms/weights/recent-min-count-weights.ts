@@ -8,9 +8,9 @@ export const recentMinCountWeights: WeightsFunction = (
 
   const NUMBER_OF_POSITIONS = 6;
   const MAX_LOTTO_NUMBER = 45;
-  const RECENT_ROUND_COUNT = 30;
+  const RECENT_EPISODE_COUNT = 50;
 
-  const recentData = data.slice(0, Math.min(data.length, RECENT_ROUND_COUNT));
+  const recentData = data.slice(-Math.min(data.length, RECENT_EPISODE_COUNT));
 
   const hitCounts = Array.from({ length: NUMBER_OF_POSITIONS }, () =>
     new Array(MAX_LOTTO_NUMBER + 1).fill(0),
