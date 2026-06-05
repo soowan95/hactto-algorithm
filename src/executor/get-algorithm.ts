@@ -2,6 +2,8 @@ import { WeightsType } from '../enums/weights-type';
 import { WeightsComplexityMap } from '../metadata/weights-complexity-map';
 import { FrequencyType } from '../enums/frequency-type';
 import { FrequencyComplexityMap } from '../metadata/frequency-complexity-map';
+import { BalanceType } from '../enums/balance-type';
+import { BalanceComplexityMap } from '../metadata/balance-complexity-map';
 
 export function getAlgorithm(): { type: string; complexity: number }[] {
   const weightsTypes: WeightsType[] = Object.values(WeightsType);
@@ -14,5 +16,10 @@ export function getAlgorithm(): { type: string; complexity: number }[] {
     type,
     complexity: FrequencyComplexityMap[type].complexity,
   }));
-  return [...weightsTypesData, ...frequencyTypesData];
+  const balanceTypes: BalanceType[] = Object.values(BalanceType);
+  const balanceTypesData = balanceTypes.map((type) => ({
+    type,
+    complexity: BalanceComplexityMap[type].complexity,
+  }));
+  return [...weightsTypesData, ...frequencyTypesData, ...balanceTypesData];
 }
