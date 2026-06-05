@@ -143,4 +143,31 @@ describe('Hactto 알고리즘 실행 결과 확인', () => {
     console.log('👉 [SUM_BALANCE] 결과:', result);
     console.log('--------------------------------------------------');
   });
+
+  it('2. RECENT_SUM_BALANCE 결과', async () => {
+    const command = new BalanceCommand('RECENT_SUM_BALANCE', data);
+
+    const result = await hacttoExecute(command);
+
+    console.log('👉 [RECENT_SUM_BALANCE] 결과:', result);
+    console.log('--------------------------------------------------');
+  });
+
+  it('3. SUM_ODD_EVEN_BALANCE 결과', async () => {
+    const command = new BalanceCommand('SUM_ODD_EVEN_BALANCE', data, 2);
+
+    const result = await hacttoExecute(command);
+
+    console.log('👉 [SUM_ODD_EVEN_BALANCE] 결과:', result);
+    console.log('--------------------------------------------------');
+  });
+
+  it('4. RECENT_SUM_ODD_EVEN_BALANCE 결과', async () => {
+    const command = new BalanceCommand('RECENT_SUM_ODD_EVEN_BALANCE', data, 2);
+
+    const result = await hacttoExecute(command);
+
+    console.log('👉 [RECENT_SUM_ODD_EVEN_BALANCE] 결과:', result);
+    console.log('--------------------------------------------------');
+  });
 });

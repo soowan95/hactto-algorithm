@@ -1,1 +1,4 @@
-export type BalanceFunction = (data: number[][]) => Promise<number[]>;
+export type BalanceFunction = (
+  data: number[][],
+  oddCount?: number,
+) => Promise<number[]>;
