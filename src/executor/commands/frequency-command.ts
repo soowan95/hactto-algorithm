@@ -1,11 +1,13 @@
 import { ExecutableCommand } from './executable-command';
 import { FrequencyType } from '../../enums/frequency-type';
 import { pairFrequency } from '../../algorithms/frequency/pair-frequency';
+import { tripletFrequency } from '../../algorithms/frequency/triplet-frequency';
 
 export class FrequencyCommand implements ExecutableCommand {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   private static registry: Record<FrequencyType, Function> = {
     [FrequencyType.PAIR_FREQUENCY]: pairFrequency,
+    [FrequencyType.TRIPLET_FREQUENCY]: tripletFrequency,
   };
 
   constructor(

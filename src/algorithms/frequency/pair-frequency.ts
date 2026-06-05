@@ -32,7 +32,7 @@ export const pairFrequency: FrequencyFunction = (
 
   const sortedPairs = pairList.sort((a, b) => b.count - a.count);
 
-  const result: Set<number> = new Set<number>();
+  const result: Set<number> = new Set();
 
   for (const item of sortedPairs) {
     const [num1, num2] = item.pair;

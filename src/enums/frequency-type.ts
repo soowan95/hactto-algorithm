@@ -1,3 +1,4 @@
 export enum FrequencyType {
   PAIR_FREQUENCY = 'PAIR_FREQUENCY',
+  TRIPLET_FREQUENCY = 'TRIPLET_FREQUENCY',
 }

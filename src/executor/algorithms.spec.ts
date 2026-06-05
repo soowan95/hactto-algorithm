@@ -102,4 +102,13 @@ describe('Hactto 알고리즘 실행 결과 확인', () => {
     console.log('👉 [PAIR_FREQUENCY] 결과:', result);
     console.log('--------------------------------------------------');
   });
+
+  it('2. TRIPLET_FREQUENCY 결과', async () => {
+    const command = new FrequencyCommand('TRIPLET_FREQUENCY', data);
+
+    const result = await hacttoExecute(command);
+
+    console.log('👉 [TRIPLET_FREQUENCY] 결과:', result);
+    console.log('--------------------------------------------------');
+  });
 });
