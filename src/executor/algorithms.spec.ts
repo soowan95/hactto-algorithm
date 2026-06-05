@@ -2,6 +2,7 @@ import { describe, it } from 'vitest';
 import { WeightsCommand } from './commands/weights-command';
 import { hacttoExecute } from './hactto-execute';
 import { FrequencyCommand } from './commands/frequency-command';
+import { BalanceCommand } from './commands/balance-command';
 
 const data = [
   [4, 7, 18, 23, 29, 41, 3],
@@ -127,6 +128,19 @@ describe('Hactto 알고리즘 실행 결과 확인', () => {
     const result = await hacttoExecute(command);
 
     console.log('👉 [RECENT_TRIPLET_FREQUENCY] 결과:', result);
+    console.log('--------------------------------------------------');
+  });
+
+  it('==================================================', () => {});
+  it('- Balance 알고리즘', () => {});
+  it('==================================================', () => {});
+
+  it('1. SUM_BALANCE 결과', async () => {
+    const command = new BalanceCommand('SUM_BALANCE', data);
+
+    const result = await hacttoExecute(command);
+
+    console.log('👉 [SUM_BALANCE] 결과:', result);
     console.log('--------------------------------------------------');
   });
 });
