@@ -5,39 +5,67 @@ export const pairFrequency: FrequencyFunction = (
 ): Promise<number[]> => {
   if (data.length === 0) return Promise.resolve([]);
 
-  const MAX_LOTTO_NUMBER = 45;
-
-  const ballScore: { number: number; score: number }[] = new Array(
-    MAX_LOTTO_NUMBER + 1,
-  ).fill({ number: 0, score: 0 });
+  const pairScore: Map<string, number> = new Map();
 
   for (const draw of data) {
     const numbers = draw.slice(0, 6);
 
     for (let i = 0; i < numbers.length - 1; i++) {
       for (let j = i + 1; j < numbers.length; j++) {
-        ballScore[numbers[i]] = {
-          number: numbers[i],
-          score: ballScore[numbers[i]].score + 1,
-        };
-        ballScore[numbers[j]] = {
-          number: numbers[j],
-          score: ballScore[numbers[j]].score + 1,
-        };
+        const pairKey = `${numbers[i]},${numbers[j]}`;
+
+        const count = pairScore.get(pairKey) || 0;
+        pairScore.set(pairKey, count + 1);
       }
     }
   }
 
-  ballScore.sort((a, b) => b.score - a.score);
+  const pairList = Array.from(pairScore.entries()).map(([pairStr, count]) => ({
+    pair: pairStr.split(',').map(Number),
+    count,
+  }));
 
-  const result = [
-    ballScore[0].number,
-    ballScore[1].number,
-    ballScore[2].number,
-    ballScore[3].number,
-    ballScore[4].number,
-    ballScore[5].number,
-  ].sort((a, b) => a - b);
+  for (let i = pairList.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pairList[i], pairList[j]] = [pairList[j], pairList[i]];
+  }
 
-  return Promise.resolve(result);
+  const sortedPairs = pairList.sort((a, b) => b.count - a.count);
+
+  const result: Set<number> = new Set<number>();
+
+  for (const item of sortedPairs) {
+    const [num1, num2] = item.pair;
+
+    if (result.size >= 6) break;
+
+    if (!result.has(num1) && !result.has(num2)) {
+      if (result.size <= 4) {
+        result.add(num1);
+        result.add(num2);
+      } else {
+        const random = Math.random() < 0.5 ? num1 : num2;
+        result.add(random);
+      }
+    } else if (!result.has(num1)) {
+      result.add(num1);
+    } else if (!result.has(num2)) {
+      result.add(num2);
+    }
+  }
+
+  if (result.size < 6) {
+    for (const item of sortedPairs) {
+      if (result.size >= 6) break;
+      result.add(item.pair[0]);
+      if (result.size >= 6) break;
+      result.add(item.pair[1]);
+    }
+  }
+
+  return Promise.resolve(
+    Array.from(result)
+      .slice(0, 6)
+      .sort((a, b) => a - b),
+  );
 };
