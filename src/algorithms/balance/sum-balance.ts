@@ -40,7 +40,7 @@ export const sumBalance: BalanceFunction = (
   }
 
   if (result.length === 0) {
-    result = Array.from((Math.floor(Math.random() * 45) + 1) as any);
+    result = [Math.floor(Math.random() * 45) + 1];
   }
 
   return Promise.resolve(result.sort((a, b) => a - b));
